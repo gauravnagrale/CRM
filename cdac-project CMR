@@ -1,0 +1,50 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import plotly.graph_objs as go
+from plotly.offline import iplot
+
+df = pd.read_csv('C:\\Users\\Gaura\\OneDrive\\Desktop\\dataset\\CRM.csv',encoding='latin1')
+df.head()
+
+df.info() #there are 541909 rows and 8 columns present at the dataset
+
+c_cnt=df['Country'].value_counts() #the maximum no of the clients are from United-kigndom
+c_cnt
+
+#map code no of customers vs country
+world_map = df[['CustomerID', 'InvoiceNo', 'Country']].groupby(['CustomerID', 'InvoiceNo', 'Country']
+                                                              ).count().reset_index(drop = False)
+countries = world_map['Country'].value_counts()
+
+data = dict(type='choropleth',
+            locations = countries.index,
+            locationmode = 'country names',
+            z = countries,
+            text = countries.index,
+            colorbar = {'title':'Orders'},
+            colorscale='Viridis',
+            reversescale = False)
+
+layout = dict(title={'text': "Number of Orders by Countries",
+                     'y':0.9,
+                     'x':0.5,
+                     'xanchor': 'center',
+                     'yanchor': 'top'},
+              geo = dict(resolution = 50,
+                         showocean = True,
+                         oceancolor = "LightBlue",
+                         showland = True,
+                         landcolor = "whitesmoke",
+                         showframe = True),
+             template = 'plotly_white',
+             height = 600,
+             width = 1000)
+
+choromap = go.Figure(data = [data], layout = layout)
+iplot(choromap, validate = False)
+
+
+df['Total_price']=df['Quantity']*df['UnitPrice']
+grp_price=df.groupby('CustomerID').sum('Total_price')
+df.sort_values(by=['Total_price'],ascending=False)
