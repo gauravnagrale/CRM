@@ -3,15 +3,15 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import plotly.graph_objs as go
 from plotly.offline import iplot
-
-df = pd.read_csv('C:\\Users\\Gaura\\OneDrive\\Desktop\\dataset\\CRM.csv',encoding='latin1')
+-----------------------------------------------------------------------------------------------------
+df = pd.read_csv('C:\\Users\\Gaura\\OneDrive\\Desktop\\dataset\\CRM.csv',encoding='latin1') #Enter your path
 df.head()
-
+---------------------------------------------------------------------------------------------
 df.info() #there are 541909 rows and 8 columns present at the dataset
-
+---------------------------------------------------------------------------------------------
 c_cnt=df['Country'].value_counts() #the maximum no of the clients are from United-kigndom
 c_cnt
-
+---------------------------------------------------------------------------------------------
 #map code no of customers vs country
 world_map = df[['CustomerID', 'InvoiceNo', 'Country']].groupby(['CustomerID', 'InvoiceNo', 'Country']
                                                               ).count().reset_index(drop = False)
@@ -43,8 +43,51 @@ layout = dict(title={'text': "Number of Orders by Countries",
 
 choromap = go.Figure(data = [data], layout = layout)
 iplot(choromap, validate = False)
-
+------------------------------------------------------------------------------------------------------------------
 
 df['Total_price']=df['Quantity']*df['UnitPrice']
 grp_price=df.groupby('CustomerID').sum('Total_price')
-df.sort_values(by=['Total_price'],ascending=False)
+df.sort_values(by=['Total_price'],ascending=False) #Highest paying Customer ID:-16446 payed amt=168469.60 and he is from UK
+#THIS MAY BE WRONG
+-------------------------------------------------------------------------------------------------------------------
+
+#find the customer who ordered max amount of goods     #NOT COMPLETED
+q=df.groupby('CustomerID').sum('Quantity')
+q['Quantity'].dtypes
+df['max_CustomerID']=q['Quantity'].max()
+df['max_CustomerID']
+------------------------------------------------------------------------------------------------------------------------------
+
+
+plt.boxplot(df['Quantity']) #WE CAN SEE THAT THERE ARE MANY OUTLIERS PRESENT AT 'Quantity' column
+plt.show()
+
+q1=0.25
+q3=0.75
+quartile1=df['Quantity'].quantile(q1)
+print('25% percentile value is:',lower)
+quartile3=df['Quantity'].quantile(q3)
+print('75% percentile value is:',upper)
+IQR=upper-lower
+up_limit = quartile3 + 1.5 * IQR
+low_limit = quartile1 - 1.5 * IQR
+print('Values that are lower than',low_limit,'are OUTLIERS')
+print('Values that are higher than',up_limit,'are OUTLIERS')
+
+--------------------------------------------------------------------------------------------------------------------------------
+plt.boxplot(df['UnitPrice']) #WE CAN SEE THAT THERE ARE MANY OUTLIERS PRESENT AT 'UnitPrice' column
+plt.show()
+df['Quantity'].describe()
+
+q1=0.25
+q3=0.75
+quartile1=df['UnitPrice'].quantile(q1)
+print('25% percentile value is:',lower)
+quartile3=df['UnitPrice'].quantile(q3)
+print('75% percentile value is:',upper)
+IQR=upper-lower
+
+up_limit = quartile3 + 1.5 * IQR
+low_limit = quartile1 - 1.5 * IQR
+print('Values that are lower than',low_limit,'are OUTLIERS')
+print('Values that are higher than',up_limit,'are OUTLIERS')
